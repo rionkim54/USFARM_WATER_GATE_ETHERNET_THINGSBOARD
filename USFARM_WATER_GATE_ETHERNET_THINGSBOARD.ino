@@ -1,4 +1,4 @@
-#define USE_MEGA     1
+#define USE_MEGA     0
 
 #include <SPI.h>
 #if USE_MEGA
@@ -242,8 +242,8 @@ void readAnalog() {
   readTemperature();
 
   
-  Serial.print(gateInfo.water_encoder);
-  Serial.print(',');
+//  Serial.print(gateInfo.water_encoder);
+//  Serial.print(',');
 //  Serial.print(gateInfo.water_onOff);
 //  Serial.print(',');
 //  Serial.print(gateInfo.bWFlow);
@@ -539,6 +539,9 @@ void RS485_send()
   digitalWrite(EN_SW, 0);
 }
 
+void(* resetFunc) (void) = 0;  // declare reset fuction at address 0
+
+
 void setup() {
 
 #if USE_MEGA
@@ -564,6 +567,7 @@ void setup() {
   
   // put your setup code here, to run once:
   Serial.begin(9600);
+  Serial.println("START");
 
   rx485_SW.begin(4800);
   pinMode(EN_SW, OUTPUT);
@@ -601,6 +605,7 @@ void setup() {
   
 }
 
+int reconnect_timeout = 0;
 void reconnect() {
 
   // Loop until we're reconnected
@@ -614,6 +619,8 @@ void reconnect() {
       client.subscribe("v1/devices/me/rpc/request/+");
 
       ledStatusWIFI = LED_STATUS_WIFI_ON;
+      
+      reconnect_timeout = 0;
     } 
     else {
 
@@ -624,7 +631,15 @@ void reconnect() {
       // Wait 5 seconds before retrying
 
       ledStatusWIFI = LED_STATUS_WIFI_OFF;
-      delay( 5000 );
+
+      reconnect_timeout += 1;
+      if(4 < reconnect_timeout) {
+
+        resetFunc(); //call reset
+        reconnect_timeout = 0;
+        
+      }
+      delay( 4000 );
     }
   }
 }
