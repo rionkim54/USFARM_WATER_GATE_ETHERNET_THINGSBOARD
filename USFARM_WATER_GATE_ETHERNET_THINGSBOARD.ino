@@ -1,5 +1,7 @@
 #define USE_MEGA     0
 
+#define TEST_FORCE_AUTO_MODE 1
+
 #include <SPI.h>
 #if USE_MEGA
 #include <Ethernet3.h>
@@ -18,6 +20,8 @@ const int LED = 13;
 //#include <ArduinoJson.h>
 #include <PubSubClient.h>
 #include <EEPROM.h>
+
+
 
 #include "thermistor.h"
 
@@ -237,7 +241,12 @@ void readAnalog() {
   gateInfo.water_onOff = (100 < analogRead(A1)) ? 1 : 0;
   
   gateInfo.bWFlow = (10 < analogRead(A2)) ? 0 : 1;
+
+#if TEST_FORCE_AUTO_MODE
+  gateInfo.bAutoMode = 1;
+#else
   gateInfo.bAutoMode = (100 < analogRead(A5)) ? 0 : 1;
+#endif
 
   readTemperature();
 
