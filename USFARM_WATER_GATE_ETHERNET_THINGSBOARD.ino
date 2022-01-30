@@ -260,7 +260,7 @@ void readAnalog() {
 //  Serial.print(',');
 //  Serial.print(gateInfo.ntc2);
 
-  Serial.println();
+//  Serial.println();
 }
 
 void doorOpen()
@@ -849,7 +849,7 @@ void loop() {
 
   if(timeout % (INTERVAL_NUM * 10) == 0) { // 1min
 
-    Serial.println(F("SendToServer"));
+//    Serial.println(F("SendToServer"));
 
     // char data[64] = { 0x00, };
     memset(data, 0x00, DATA_NUM);
